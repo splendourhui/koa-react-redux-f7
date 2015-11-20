@@ -1,0 +1,8 @@
+node_modules
+public/lib
+public/js
+public/css
+*.log
+.idea
+.git
+.DS_store
