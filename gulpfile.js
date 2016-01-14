@@ -4,10 +4,10 @@ var concatCss = require('gulp-concat-css');
 var minifyCSS = require('gulp-minify-css');
 var gutil = require('gulp-util');
 var webpack = require('webpack');
-var config = require('./webpack.config');
+var webpackConfig = require('./webpack.config');
 
 gulp.task('webpack_client', function(cb) {
-  webpack(config, function(err, stats) {
+  webpack(webpackConfig, function(err, stats) {
     if (err)
       throw new gutil.PluginError("webpack", err);
     gutil.log("[webpack_client]", stats.toString());
@@ -17,11 +17,7 @@ gulp.task('webpack_client', function(cb) {
 
 gulp.task('stylesheets', function() {
   return gulp.src([
-    './src/*.less',
-    './src/*/*.less',
-    './src/*/*/*.less',
-    './src/*/*/*/*.less',
-    './src/*/*/*/*/*.less'
+    './src/**/*.less'
   ])
     .pipe(less().on('error', gutil.log))
     .pipe(concatCss("app.bundle.css"))
@@ -34,18 +30,11 @@ gulp.task('default', function() {
   gulp.run('stylesheets');
 
   gulp.watch([
-    './src/*.js',
-    './src/*/*.js',
-    './src/*/*/*.js',
-    './src/*/*/*/*.js',
-    './src/*/*/*/*/*.js'
+    './src/**/*.js',
+    './src/**/*.jsx',
   ], ['webpack_client']);
 
   gulp.watch([
-    './src/*.less',
-    './src/*/*.less',
-    './src/*/*/*.less',
-    './src/*/*/*/*.less',
-    './src/*/*/*/*/*.less'
+    './src/**/*.less'
   ], ['stylesheets']);
 });

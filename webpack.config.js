@@ -8,8 +8,6 @@ var commonConfig = {
   ],
   resolve: {
     alias: {
-      'react': 'react/dist/react.min.js',
-      'react-dom': 'react-dom/dist/react-dom.min.js',
       'history': 'react-router/node_modules/history',
       'lodash': 'lodash',
       'moment': 'moment/min/moment.min.js'

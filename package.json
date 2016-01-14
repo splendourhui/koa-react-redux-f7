@@ -7,6 +7,7 @@
     "koa": "1.0.0",
     "koa-middlewares": "4.1.0",
     "koa-better-body": "1.0.17",
+    "koa-logs-full": "*",
     "log4js": "0.6.21",
     "react": "0.14.0",
     "react-dom": "0.14.0",

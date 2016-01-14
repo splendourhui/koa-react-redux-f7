@@ -6,17 +6,20 @@ const koa = require('koa');
 const middlewares = require('koa-middlewares');
 const koaBody = require('koa-better-body');
 const router = middlewares.router();
+const logRecord = require('koa-logs-full');
 
-const logger = require('./common/log4js');
 const config = require('./config');
 
-let app = koa();
+let app = new koa();
 
 /**
  * response time header
  */
 app.use(middlewares.rt());
 
+/**
+ * response compress
+ */
 app.use(middlewares.compress({
   threshold: 2048,
   flush: require('zlib').Z_SYNC_FLUSH
@@ -26,36 +29,35 @@ app.use(middlewares.compress({
  * static file server
  */
 app.use(middlewares.staticCache(path.join(__dirname, 'public')));
+
+/**
+ * koa body parser, support file body
+ */
 app.use(koaBody({
-  patchKoa: true,
-  formLimit: 10240,
-  multipart: true,
-  extendTypes: {
-    // will parse application/x-javascript type body as a JSON string
-    json: ['application/x-javascript'],
-    multipart: ['multipart/mixed']
-  }
+ patchKoa: true,
+ jsonLimit: '20mb',
+ formLimit: '20mb',
+ multipart: true,
+ extendTypes: {
+   // will parse application/x-javascript type body as a JSON string
+   json: ['application/x-javascript'],
+   multipart: ['multipart/mixed']
+ }
 }));
 
-app.use(logger({
-  filename: 'logs/logger.log',
-  staticPath: [
-    '/img',
-    '/js',
-    '/lib',
-    '/css'
-  ]
+app.use(logRecord(app, {
+  logdir: path.join(__dirname, 'logs'),
+  env: config.logEnv || 'development'
 }));
 
 /**
- * log response time
+ * log username
  */
 app.use(function*(next) {
   let start = new Date;
   yield next;
   let ms = new Date - start;
-  console.log(`${this.cookies.get('username')} :`
-    + ` ${this.method} ${this.url} - ${ms}ms`);
+  this.logger.log(`{{#green}}username{{/green}}: ${this.cookies.get('admin-username')}`);
 });
 
 require('./routes')(router);
